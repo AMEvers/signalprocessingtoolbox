@@ -41,15 +41,16 @@ class ComplexWave:
 
 class Toolbox(object):
     @classmethod
-    def farfield_mic_delay(cls, mic_offset: list, source: set) -> float:
+    def farfield_mic_delay(cls, mic_offset: list, source: tuple) -> float:
         """
-        Returns the distance and delay of a farfield planar wavefront for a 3D array.
+        Returns the delay of a farfield planar wavefront to reach an element from some 3D offset given a elevation and 
+        azimuth for the signal.
         Input:
           mic_pos - set of [m_x, m_y, m_z] where m is the position of a mic in relation to a delay reference point.
-          source - set of (elevation, azimuth)
+          source - tuple of (elevation, azimuth)
         
         Returns:
-          delay
+          delay of signal between an element from some reference offset.
         """
         # convert source into a unit vector where source[0] is elevation source[1] is azimuth. Simplifies the math.
         source_x = cos(source[0]) * cos(source[1])
@@ -69,6 +70,8 @@ class Toolbox(object):
         Returns:
           sum of waves in their real and imaginary parts
         """
+        # I bet I could overwrite the dunder method for __add__ in my ComplexWave class so that I could just add waves together 
+        # as easy as wave3 = wave1 + wave2. That said, I think this may be more computationally efficient?
         return set(map(sum, zip(*args)))
 
 
@@ -85,6 +88,7 @@ def single_freq_linear_sensitivity(frequency, element_num, spacing, angle_resolu
         # Sums of the real and imaginary number wave elements.
         wave_sum = Toolbox.wave_sum(*linear_array_waves_at_angle)
         output = hypot(*wave_sum) / element_num
+        # Convert to logarithmic decibel scale
         log_of_output = 20 * log10(output)
         if log_of_output < -50:
             log_of_output = -50
