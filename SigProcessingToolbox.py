@@ -1,5 +1,6 @@
 from numpy import pi, sin, cos, arctan2, hypot, degrees, radians, dot, log10, arange, linspace, array
 import matplotlib.pyplot as plt
+from itertoos import repeat
 from dataclasses import dataclass
 
 SPEED_OF_SOUND = 343
@@ -98,23 +99,10 @@ def single_freq_linear_sensitivity(frequency, element_num, spacing, angle_resolu
 def frequence_range_linear_sensitivity(frequency_start, frequency_end, element_num, spacing, frequence_resolution,
                                        angle_resolution):
     # Delay-sum beamformer calculaticing sensitivity of the array for a frequency spectrum.
-
-    # NOTE: This is very ugly. I was just trying to figure out how you're supposed to format data for a matplotlib
-    #       spectrograms. They kept being generated flat before I realized I needed to actually plot the freq_data into
-    #       a dimensional array. I was using linspace for it and my spectrogram kept coming out as a 2D graph.
-    #       Don't judge me too harshly, I'm just too tired to clean it up.
-    gain_data = []
-    freq_data = []
-    for f in range(frequence_resolution):
-        freq = (frequency_end - frequency_start) * f / (frequence_resolution - 1) + frequency_start
-        gain_row = []
-        freq_row = []
-
-        for angle, log_of_output in single_freq_linear_sensitivity(freq, element_num, spacing, angle_resolution):
-            gain_row.append(log_of_output)
-            freq_row.append(freq)
-        gain_data.append(gain_row)
-        freq_data.append(freq_row)
+    freq = lambda f: (frequency_end - frequency_start) * f / (frequence_resolution - 1) + frequency_start
+    freq_gain = lambda f: [log_of_output for _, log_of_output in single_freq_linear_sensitivity(freq(f), element_num, spacing, angle_resolution)]
+    gain_data = [freq_gain(f) for f in range(frequence_resolution)]
+    freq_data = [list(repeat(freq(f), angle_resolution)) for f in range(frequence_resolution)]
     return freq_data, gain_data
 
 
