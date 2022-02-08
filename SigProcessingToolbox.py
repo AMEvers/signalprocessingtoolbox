@@ -1,6 +1,6 @@
 from numpy import pi, sin, cos, arctan2, hypot, degrees, radians, dot, log10, arange, linspace, array
 import matplotlib.pyplot as plt
-from itertoos import repeat
+from itertools import repeat
 from dataclasses import dataclass
 
 SPEED_OF_SOUND = 343
