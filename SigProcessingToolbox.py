@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from itertools import repeat
 from dataclasses import dataclass
 
-SPEED_OF_SOUND = 343
+SPEED_OF_SOUND = 343.3
 
 
 @dataclass
@@ -86,19 +86,26 @@ def single_freq_linear_sensitivity(frequency, element_num, spacing, angle_resolu
         # I'm being lazy here. This isn't scalable to hold in memory for thousands of elements. I should use a
         # generator.
         linear_array_waves_at_angle = [ComplexWave(frequency, delay(element)).wave for element in range(element_num)]
+        
+        # This code should honestly be part of complexWave class. Probably overwrite the __add__ dunder method 
         # Sums of the real and imaginary number wave elements.
         wave_sum = Toolbox.wave_sum(*linear_array_waves_at_angle)
+        # Setermine amplitude
         output = hypot(*wave_sum) / element_num
+        
         # Convert to logarithmic decibel scale
-        log_of_output = 20 * log10(output)
-        if log_of_output < -50:
-            log_of_output = -50
-        yield rad, log_of_output
+        decibals = 20 * log10(output)
+        if decibals < -50:
+            decibals = -50
+        yield rad, decibals
 
 
 def frequence_range_linear_sensitivity(frequency_start, frequency_end, element_num, spacing, frequence_resolution,
                                        angle_resolution):
     # Delay-sum beamformer calculaticing sensitivity of the array for a frequency spectrum.
+    
+    # I shouldn't have to hold this in memory. I should be able to implement as a generator and feed to matlibplot but too lazy to figure out
+    # how to wrangle it to create a spectrogram off a generator. This could be a lot cleaner if I did.
     freq = lambda f: (frequency_end - frequency_start) * f / (frequence_resolution - 1) + frequency_start
     freq_gain = lambda f: [log_of_output for _, log_of_output in single_freq_linear_sensitivity(freq(f), element_num, spacing, angle_resolution)]
     gain_data = [freq_gain(f) for f in range(frequence_resolution)]
@@ -129,7 +136,6 @@ linear_beamform = frequence_range_linear_sensitivity(frequency_start=0, frequenc
 X = linspace(-90, 90, 200)
 Y = array(linear_beamform[0])
 Z = array(linear_beamform[1])
-print(len(Z))
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
