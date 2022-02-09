@@ -5,7 +5,9 @@ from dataclasses import dataclass
 
 SPEED_OF_SOUND = 343.3
 
-
+# ComplexWave is a bit of a misnomer because it isn't. I could write a DFT class that is a subclass of this class that takes an actual
+# complex wave and decompose it into it's component frequencies. It would probably have a function to return an
+# array of this class for each frequency in the complex wave.
 @dataclass
 class ComplexWave:
     frequency: float
@@ -105,7 +107,10 @@ def frequence_range_linear_sensitivity(frequency_start, frequency_end, element_n
     # Delay-sum beamformer calculaticing sensitivity of the array for a frequency spectrum.
     
     # I shouldn't have to hold this in memory. I should be able to implement as a generator and feed to matlibplot but too lazy to figure out
-    # how to wrangle it to create a spectrogram off a generator. This could be a lot cleaner if I did.
+    # how to wrangle it to create a spectrogram off a generator. This could be a lot cleaner if I did. Something like...
+    # for f in range(frequence_resolution):
+    #   freq = (frequency_end - frequency_start) * f / (frequence_resolution - 1) + frequency_start
+    #   yield f, single_freq_linear_sensitivity(freq(f), element_num, spacing, angle_resolution)
     freq = lambda f: (frequency_end - frequency_start) * f / (frequence_resolution - 1) + frequency_start
     freq_gain = lambda f: [log_of_output for _, log_of_output in single_freq_linear_sensitivity(freq(f), element_num, spacing, angle_resolution)]
     gain_data = [freq_gain(f) for f in range(frequence_resolution)]
