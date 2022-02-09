@@ -5,9 +5,10 @@ from dataclasses import dataclass
 
 SPEED_OF_SOUND = 343.3
 
-# ComplexWave is a bit of a misnomer because it isn't. I could write a DFT class that is a subclass of this class that takes an actual
-# complex wave and decompose it into it's component frequencies. It would probably have a function to return an
-# array of this class for each frequency in the complex wave.
+# ComplexWave is a bit of a misnomer because it isn't. It's a class to represent  simple waves as complex numbers. 
+# I could write a DFT class that is a subclass of this class that takes an actual complex wave and decompose it into 
+# it's component frequencies. It would probably have a function to return an array of this class for each frequency 
+# in the complex wave.
 @dataclass
 class ComplexWave:
     frequency: float
