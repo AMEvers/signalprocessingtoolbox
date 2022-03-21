@@ -124,7 +124,7 @@ def frequence_range_linear_sensitivity(frequency_start, frequency_end, frequence
         Delay-sum beamformer calculaticing sensitivity of the array for a frequency spectrum.
     """
     # A list composed of frquencies from frequency_start to frequency_end determined by frequency resolution.
-    freq_range = lambda f_range: [(frequency_end - frequency_start) * f / (frequence_resolution) + frequency_start for f in range(f_range)]
+    freq_range = lambda f_range: [(frequency_end - frequency_start) * f / (frequence_resolution-1) + frequency_start for f in range(f_range)]
     gain_data = []
     with ProcessPoolExecutor() as exe:
         '''
