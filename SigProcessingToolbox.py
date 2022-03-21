@@ -124,7 +124,7 @@ def frequence_range_linear_sensitivity(frequency_start, frequency_end, frequence
         Delay-sum beamformer calculaticing sensitivity of the array for a frequency spectrum.
     """
     # A list composed of frquencies from frequency_start to frequency_end determined by frequency resolution.
-    freq_range = lambda f_range: [(frequency_end - frequency_start) * f / (frequence_resolution-1) + frequency_start for f in range(f_range)]
+    freq_range = [(frequency_end - frequency_start) * f / (frequence_resolution-1) + frequency_start for f in range(f_range)]
     gain_data = []
     with ProcessPoolExecutor() as exe:
         '''
@@ -133,10 +133,10 @@ def frequence_range_linear_sensitivity(frequency_start, frequency_end, frequence
             Also, spinning up a subprocess for every frequency probably is a bad practice.
             I should have a subprocess handle a band of frequencies.
         '''
-        for _, db_sensitivities in exe.map(freq_linear_sensitivity, freq_range(frequence_resolution), repeat(element_num), repeat(spacing), repeat(angle_resolution)):
+        for _, db_sensitivities in exe.map(freq_linear_sensitivity, freq_range, repeat(element_num), repeat(spacing), repeat(angle_resolution)):
             gain_data.append(db_sensitivities)
     # I wanted to be able to have frequency and gain data be yielded so I didn't have to store in memory but couldn't find a way to have matlibplot consume a generator.
-    freq_data = [list(repeat(f, angle_resolution)) for f in freq_range(frequence_resolution)]
+    freq_data = [list(repeat(f, angle_resolution)) for f in freq_range]
     return freq_data, gain_data
                 
        
